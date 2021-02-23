@@ -28,10 +28,13 @@ public class ProductCategoryRepositoryTest {
 
     @Test
     public void saveTest(){
-        ProductCategory productCategory = new ProductCategory();
-        productCategory.setCategoryName("Women favorite");
-        productCategory.setCategoryType(3);
-        repository.save(productCategory);
+        ProductCategory productCategory = repository.findOne(2);
+        productCategory.setCategoryType(10);
+//        ProductCategory productCategory = new ProductCategory();
+//        productCategory.setCategoryId(2);
+//        productCategory.setCategoryName("men favorite");
+//        productCategory.setCategoryType(3);
+          repository.save(productCategory);
 
     }
 
