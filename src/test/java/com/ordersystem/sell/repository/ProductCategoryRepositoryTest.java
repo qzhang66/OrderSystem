@@ -27,15 +27,28 @@ public class ProductCategoryRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void saveTest(){
-        ProductCategory productCategory = repository.findOne(2);
-        productCategory.setCategoryType(10);
+//        ProductCategory productCategory = repository.findOne(2);
+//        productCategory.setCategoryType(3);
 //        ProductCategory productCategory = new ProductCategory();
 //        productCategory.setCategoryId(2);
 //        productCategory.setCategoryName("men favorite");
 //        productCategory.setCategoryType(3);
-          repository.save(productCategory);
+        ProductCategory productCategory = new ProductCategory("MAN FAVORITE", 4);
+
+         ProductCategory result = repository.save(productCategory);
+         Assert.assertNotEquals(null, result);
 
     }
+
+    @Test
+    public void findByCategoryTypeInTest(){
+        List<Integer> list  = Arrays.asList(2,3);
+        List<ProductCategory> result = repository.findByCategoryTypeIn(list);
+        Assert.assertNotEquals(0,result.size());
+    }
+
+
 
 }
