@@ -19,8 +19,8 @@ public class ProductInfo {
     private String productDescription;
     private String productIcon;
     // 0 is normal, 1 is not exist
-    private int productStatus;
-    private int categoryType;
+    private Integer productStatus;
+    private Integer categoryType;
 
     public ProductInfo() {
     }
