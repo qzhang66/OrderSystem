@@ -1,34 +1,27 @@
-package com.ordersystem.sell.dataobject;
+package com.ordersystem.sell.dto;
 
-import com.ordersystem.sell.enums.OrderStatusEnum;
+import com.ordersystem.sell.dataobject.OrderDetail;
 import com.ordersystem.sell.enums.OrderStatusEnum;
 import com.ordersystem.sell.enums.PayStatusEnum;
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-
-@Entity
 @Data
-@DynamicUpdate
-public class OrderMaster {
-    @Id
+public class OrderDTO {
     private String orderId;
     private String buyerName;
     private String buyerPhone;
     private String buyerAddress;
     private String buyerOpenid;
     private BigDecimal orderAmount;
-    private Integer orderStatus = OrderStatusEnum.NEW.getCode();
+    private Integer orderStatus;
     /*pay status, not pay=0*/
-    private Integer payStatus = PayStatusEnum.WAIT.getCode();
+    private Integer payStatus;
     private Date createTime;
     private Date updateTime;
+    List<OrderDetail> orderDetailList;
 
 }
