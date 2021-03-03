@@ -2,6 +2,8 @@ package com.ordersystem.sell.service.impl;
 
 import com.ordersystem.sell.dataobject.OrderDetail;
 import com.ordersystem.sell.dto.OrderDTO;
+import com.ordersystem.sell.repository.OrderDetailRepositoryTest;
+import com.ordersystem.sell.service.OrderService;
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.criterion.Order;
@@ -10,6 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -23,9 +27,10 @@ public class OrderServiceImplTest  {
     @Autowired
     private OrderServiceImpl orderService;
     private final String BUYER_OPENID = "1101110";
+    private final String ORDER_ID = "1614720614347968471" ;
 
     @Test
-    public void testCreate() {
+    public void testCreate() throws Exception {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setBuyerName("Alice");
         orderDTO.setBuyerAddress("Calgary,Canada");
@@ -47,18 +52,31 @@ public class OrderServiceImplTest  {
         Assert.assertNotNull(result);
     }
 
-    public void testFindOne() {
+    @Test
+    public void testFindOne() throws Exception{
+       OrderDTO result = orderService.findOne(ORDER_ID);
+       log.info("find single order result = {}", result);
+       Assert.assertEquals(ORDER_ID, result.getOrderId());
+
+
     }
 
-    public void testFindList() {
+    @Test
+    public void testFindList() throws Exception{
+        PageRequest request = new PageRequest(0,2);
+        Page<OrderDTO> orderDTOPage = orderService.findList(BUYER_OPENID,request);
+        Assert.assertNotEquals(0,orderDTOPage.getTotalElements());
     }
 
-    public void testCancel() {
+    @Test
+    public void testCancel() throws Exception{
     }
 
-    public void testFinish() {
+    @Test
+    public void testFinish() throws Exception{
     }
 
-    public void testPaid() {
+    @Test
+    public void testPaid() throws Exception {
     }
 }
