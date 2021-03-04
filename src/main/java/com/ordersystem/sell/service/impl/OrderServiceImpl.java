@@ -15,7 +15,6 @@ import com.ordersystem.sell.repository.OrderMasterRepository;
 import com.ordersystem.sell.service.OrderService;
 import com.ordersystem.sell.service.ProductService;
 import com.ordersystem.sell.utils.KeyUtil;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,7 +28,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -41,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMasterRepository orderMasterRepository;
+
     @Transactional
     @Override
     public OrderDTO create(OrderDTO orderDTO) {
@@ -106,9 +108,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDTO cancel(OrderDTO orderDTO) {
+        OrderMaster orderMaster = new OrderMaster();
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())){
+                log.error("cancel order order status is incorrect, orderId={},orderStatus={}", orderDTO.getOrderId(),orderDTO.getOrderStatus());
+                throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+            }
+        orderDTO.setOrderStatus(OrderStatusEnum.CANCEL.getCode());
+        BeanUtils.copyProperties(orderDTO,orderMaster);
+        OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+        if(updateResult == null){
+                log.error("cancel order, unsuccessfully update orderMaster={}", orderMaster);
+                throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+            }
+        if(CollectionUtils.isEmpty(orderDTO.getOrderDetailList())){
+                log.error("cancel order, no product detail in order, orderDTO={}",  orderDTO);
+                throw new SellException(ResultEnum.ORDER_DETAIL_EMPTY);
+            }
+        List<CartDTO> cartDTOList = orderDTO.getOrderDetailList().stream().map(e->new CartDTO(e.getProductId(),e.getProductQuantity()))
+                                        .collect(Collectors.toList());
+        productService.increaseStock(cartDTOList);
 
-        return null;
+        if(orderDTO.getPayStatus().equals(PayStatusEnum.SUCCESS.getCode())){
+                //TODO
+            }
+            return orderDTO;
+
     }
 
     @Override

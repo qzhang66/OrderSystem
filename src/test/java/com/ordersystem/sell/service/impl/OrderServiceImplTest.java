@@ -2,10 +2,12 @@ package com.ordersystem.sell.service.impl;
 
 import com.ordersystem.sell.dataobject.OrderDetail;
 import com.ordersystem.sell.dto.OrderDTO;
+import com.ordersystem.sell.enums.OrderStatusEnum;
 import com.ordersystem.sell.repository.OrderDetailRepositoryTest;
 import com.ordersystem.sell.service.OrderService;
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.hibernate.criterion.Order;
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,6 +72,9 @@ public class OrderServiceImplTest  {
 
     @Test
     public void testCancel() throws Exception{
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        OrderDTO result = orderService.cancel(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.CANCEL.getCode(), result.getOrderStatus());
     }
 
     @Test
