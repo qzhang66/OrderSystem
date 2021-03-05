@@ -15,6 +15,7 @@ import com.ordersystem.sell.repository.OrderMasterRepository;
 import com.ordersystem.sell.service.OrderService;
 import com.ordersystem.sell.service.ProductService;
 import com.ordersystem.sell.utils.KeyUtil;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -138,12 +139,44 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDTO finish(OrderDTO orderDTO) {
-        return null;
+       if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())){
+           log.error("finish order. order status is not correct, orderId={}, orderStatus={}", orderDTO.getOrderId(),orderDTO.getOrderStatus());
+           throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+       }
+       orderDTO.setOrderStatus(OrderStatusEnum.FINISH.getCode());
+       OrderMaster orderMaster = new OrderMaster();
+       BeanUtils.copyProperties(orderDTO,orderMaster);
+       OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+       if(updateResult == null){
+           log.error("finish order unsuccessfully updated orderMaster={}", orderMaster);
+           throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+       }
+
+        return orderDTO;
     }
 
     @Override
+    @Transactional
     public OrderDTO paid(OrderDTO orderDTO) {
-        return null;
+        if(!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())){
+            log.error("paid order unsuccessfully orderStatus is not correct, orderId={}, orderStatus={}", orderDTO.getOrderId(),orderDTO.getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        if(!orderDTO.getPayStatus().equals(PayStatusEnum.WAIT.getCode())){
+            log.error("pay order unsuccessfully paystatus is incorrect, orderDTO={}", orderDTO);
+            throw new SellException(ResultEnum.ORDER_PAY_STATUS_ERROR);
+        }
+        orderDTO.setPayStatus(PayStatusEnum.SUCCESS.getCode());
+        OrderMaster orderMaster = new OrderMaster();
+        BeanUtils.copyProperties(orderDTO, orderMaster);
+        OrderMaster updateResult = orderMasterRepository.save(orderMaster);
+        if(updateResult == null){
+            log.error("Pay order unsuccessfully orderMaster={}", orderMaster);
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+
+        return orderDTO;
     }
 }

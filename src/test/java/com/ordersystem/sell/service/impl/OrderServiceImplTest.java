@@ -3,7 +3,9 @@ package com.ordersystem.sell.service.impl;
 import com.ordersystem.sell.dataobject.OrderDetail;
 import com.ordersystem.sell.dto.OrderDTO;
 import com.ordersystem.sell.enums.OrderStatusEnum;
+import com.ordersystem.sell.enums.PayStatusEnum;
 import com.ordersystem.sell.repository.OrderDetailRepositoryTest;
+import com.ordersystem.sell.repository.OrderMasterRepository;
 import com.ordersystem.sell.service.OrderService;
 import junit.framework.TestCase;
 import lombok.extern.slf4j.Slf4j;
@@ -79,9 +81,17 @@ public class OrderServiceImplTest  {
 
     @Test
     public void testFinish() throws Exception{
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        OrderDTO result = orderService.finish(orderDTO);
+        Assert.assertEquals(OrderStatusEnum.FINISH.getCode(), result.getOrderStatus());
+
     }
 
     @Test
     public void testPaid() throws Exception {
+        OrderDTO orderDTO = orderService.findOne(ORDER_ID);
+        OrderDTO result = orderService.paid(orderDTO);
+        Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(),result.getPayStatus());
+
     }
 }
