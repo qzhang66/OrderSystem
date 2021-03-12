@@ -5,12 +5,11 @@ import com.ordersystem.sell.converter.OrderForm2OrderDTO;
 import com.ordersystem.sell.dto.OrderDTO;
 import com.ordersystem.sell.enums.ResultEnum;
 import com.ordersystem.sell.exception.SellException;
+import com.ordersystem.sell.service.BuyerService;
 import com.ordersystem.sell.service.OrderService;
 import com.ordersystem.sell.utils.ResultVOUtil;
-import form.OrderForm;
+import com.ordersystem.sell.form.OrderForm;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
-import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +30,9 @@ import java.util.Map;
 public class BuyerOrderController {
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private BuyerService buyerService;
+
 
     @PostMapping("/create")
     // create order
@@ -74,8 +76,8 @@ public class BuyerOrderController {
 
     public ResultVO<OrderDTO> detail (@RequestParam("openid") String openid,
                                           @RequestParam("orderid") String orderid){
-        //TODO need to improve
-       OrderDTO orderDTO = orderService.findOne(orderid);
+
+        OrderDTO orderDTO = buyerService.findOrderOne(openid,orderid);
        return ResultVOUtil.success(orderDTO);
 
     }
@@ -84,9 +86,7 @@ public class BuyerOrderController {
     public ResultVO cancel (@RequestParam("openid") String openid,
                             @RequestParam("orderid") String orderid){
 
-        //TODO not secure need to improve
-        OrderDTO orderDTO = orderService.findOne(orderid);
-        orderService.cancel(orderDTO);
+        buyerService.cancelOrder(openid,orderid);
         return ResultVOUtil.success();
     }
 }

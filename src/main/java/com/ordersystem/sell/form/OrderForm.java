@@ -1,4 +1,4 @@
-package form;
+package com.ordersystem.sell.form;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
